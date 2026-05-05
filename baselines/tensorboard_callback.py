@@ -55,16 +55,21 @@ class TensorboardCallback(BaseCallback):
             #images_row = rearrange(np.array(images), "(r f) h w c -> (r c h) (f w)", r=2)
             #self.logger.record("trajectory/image", Image(images_row, "HW"), exclude=("stdout", "log", "json", "csv"))
 
-            explore_map = np.array(self.training_env.get_attr("explore_map"))
-            map_sum = reduce(explore_map, "f h w -> h w", "max")
-            self.logger.record("trajectory/explore_sum", Image(map_sum, "HW"), exclude=("stdout", "log", "json", "csv"))
+            try:
+                explore_map = np.array(self.training_env.get_attr("explore_map"))
+                map_sum = reduce(explore_map, "f h w -> h w", "max")
+                self.logger.record("trajectory/explore_sum", Image(map_sum, "HW"), exclude=("stdout", "log", "json", "csv"))
+                map_row = rearrange(explore_map, "(r f) h w -> (r h) (f w)", r=2)
+                self.logger.record("trajectory/explore_map", Image(map_row, "HW"), exclude=("stdout", "log", "json", "csv"))
+            except AttributeError:
+                pass
 
-            map_row = rearrange(explore_map, "(r f) h w -> (r h) (f w)", r=2)
-            self.logger.record("trajectory/explore_map", Image(map_row, "HW"), exclude=("stdout", "log", "json", "csv"))
-
-            list_of_flag_dicts = self.training_env.get_attr("current_event_flags_set")
-            merged_flags = {k: v for d in list_of_flag_dicts for k, v in d.items()}
-            self.logger.record("trajectory/all_flags", json.dumps(merged_flags))
+            try:
+                list_of_flag_dicts = self.training_env.get_attr("current_event_flags_set")
+                merged_flags = {k: v for d in list_of_flag_dicts for k, v in d.items()}
+                self.logger.record("trajectory/all_flags", json.dumps(merged_flags))
+            except AttributeError:
+                pass
 
         return True
     
