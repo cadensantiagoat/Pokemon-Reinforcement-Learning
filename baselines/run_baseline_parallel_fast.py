@@ -27,7 +27,7 @@ def make_env(rank, env_conf, seed=0):
 if __name__ == '__main__':
 
     use_wandb_logging = False
-    ep_length = 2048 * 10
+    ep_length = 2048  # smoke test: was 2048 * 10
     sess_id = str(uuid.uuid4())[:8]
     sess_path = Path(f'session_{sess_id}')
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     
     print(env_config)
     
-    num_cpu = 16  # Also sets the number of episodes per training iteration
+    num_cpu = 4  # smoke test: was 16
     env = SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
     
     checkpoint_callback = CheckpointCallback(save_freq=ep_length, save_path=sess_path,
@@ -79,7 +79,7 @@ if __name__ == '__main__':
         model = PPO('CnnPolicy', env, verbose=1, n_steps=ep_length // 8, batch_size=128, n_epochs=3, gamma=0.998, tensorboard_log=sess_path)
 
     # run for up to 5k episodes
-    model.learn(total_timesteps=(ep_length)*num_cpu*5000, callback=CallbackList(callbacks))
+    model.learn(total_timesteps=100 * (ep_length // 8) * num_cpu, callback=CallbackList(callbacks))  # 100 PPO iterations
 
     if use_wandb_logging:
         run.finish()
