@@ -43,7 +43,7 @@ if __name__ == '__main__':
     print(env_config)
     
     num_cpu = 4  # smoke test: was 16
-    env = SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
+    env = SubprocVecEnv([make_env(i, {**env_config, 'save_video': i == 0}) for i in range(num_cpu)])
     
     checkpoint_callback = CheckpointCallback(save_freq=ep_length, save_path=sess_path,
                                      name_prefix='poke')
