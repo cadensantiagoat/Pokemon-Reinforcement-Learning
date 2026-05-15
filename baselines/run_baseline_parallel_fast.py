@@ -37,7 +37,7 @@ if __name__ == '__main__':
                 'print_rewards': True, 'save_video': False, 'fast_video': True, 'session_path': sess_path,
                 'gb_path': '../PokemonRed.gb', 'debug': False, 'sim_frame_dist': 2_000_000.0, 
                 'use_screen_explore': True, 'reward_scale': 4, 'extra_buttons': False,
-                'explore_weight': 3 # 2.5
+                'explore_weight': 1 # 2.5
             }
     
     print(env_config)
